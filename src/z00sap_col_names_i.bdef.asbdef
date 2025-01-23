@@ -1,0 +1,27 @@
+managed implementation in class zbp_00sap_col_names_i unique;
+//strict ( 2 );
+
+define behavior for Z00SAP_COL_NAMES_I //alias <alias_name>
+persistent table Z00SAP_COL_NAMES
+lock master
+//authorization master ( instance )
+//etag master <field_name>
+{
+  field ( mandatory : create )
+  Id,
+  Name;
+
+  field ( readonly : update )
+    Id;
+
+  create;
+  update;
+  delete;
+  mapping for z00sap_col_names
+  {
+    Id = id;
+    Name = name;
+
+  }
+
+}

@@ -1,0 +1,96 @@
+@Metadata.layer: #CORE
+
+@UI: {
+ headerInfo: {
+  title: {
+    type: #STANDARD,
+    value: 'Projectid'
+  },
+  typeName: 'Project Overview',
+ typeNamePlural: 'Project Overviews'
+ }
+}
+
+annotate entity Z00SAP_ProjectOverview_C with
+{
+  @UI.facet: [
+    /* Header Fecets and Datapoints */
+   //{ purpose: #HEADER,             id:'HDR_PrNa',        type: #DATAPOINT_REFERENCE,      position: 10, targetQualifier: 'ProjectName'                                             },
+    { purpose: #HEADER,             id:'HDR_FILE',        type: #DATAPOINT_REFERENCE,      position: 20, targetQualifier: 'LocalLastChangedAt'                                },
+   // { purpose: #HEADER,             id:'HDR_Vers',      type: #DATAPOINT_REFERENCE,      position: 30, targetQualifier: 'Version'                                               },
+  //**----  Body facets
+    { label: 'File Information',    id: 'Attachment',     type: #COLLECTION,               position: 10                                                                        },
+    //{ label: 'Invoice Details',     id: 'Invoicedet',     type: #IDENTIFICATION_REFERENCE, position: 10,                             parentId: 'File',        purpose: #STANDARD },
+    {                               id: 'Upload',         type: #FIELDGROUP_REFERENCE,     position: 20  ,targetQualifier: 'Upload', parentId: 'Attachment',  purpose: #STANDARD },
+   //** --- Excel data Facet **
+    { label: 'Project Technology Details',          id: 'Data',           type: #LINEITEM_REFERENCE,       position: 30,  targetElement: 'tbbview', parentId: 'Attachment', purpose: #STANDARD }, 
+   //** --- general Project data **
+    { id: 'Projectata', purpose: #STANDARD, type: #FIELDGROUP_REFERENCE, label: 'Project Data', position: 05, targetQualifier: 'ProjectData' }   
+    ]
+
+  @UI: {
+       identification: [ { position: 10 , label: 'Project ID' }, {type:#FOR_ACTION, label: 'Check Project Hierarchy & Coloring', dataAction: 'checkHierarchies', invocationGrouping: #ISOLATED}
+        ],
+       dataPoint:        { title: 'Project ID', targetValueElement: 'Projectid' } 
+       }
+
+  @UI.lineItem: [{position: 10,type: #STANDARD,label: 'Project ID' },
+      {type:#FOR_ACTION, label: 'Duplicate Projects', dataAction: 'duplicateProject', invocationGrouping: #ISOLATED},
+      {type:#FOR_ACTION, label: 'Synchronize Attachment', dataAction: 'exportExcelData', invocationGrouping: #ISOLATED},
+//      {type:#FOR_ACTION, label: 'Import Project', dataAction: 'importExcelProject'},
+      {type:#FOR_ACTION, label: 'Check Project Hierarchy & Coloring', dataAction: 'checkHierarchies', invocationGrouping: #ISOLATED},
+      {type:#FOR_ACTION, label: 'Delete Projects', dataAction: 'deleteProject', invocationGrouping: #ISOLATED}]
+  //  @UI.identification: [{position: 10,type: #STANDARD,label: 'Projectid' }]
+  @UI.selectionField: [{position: 10}]
+  //  @UI.fieldGroup: [{qualifier: 'Fieldgroup:HeaderItems', position: 50, label: 'Projectid'        }]
+  Projectid;
+  @UI: { lineItem:       [ { position: 10, importance: #HIGH , label: 'Version'}  ] ,
+       identification: [ { position: 10 , label: 'Version' } ]
+       }
+  @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 20 }]  
+  @EndUserText.label: 'Version'
+  Version;
+  @UI.lineItem: [{position: 30,type: #STANDARD,label: 'SapVersion' }]
+  @UI.identification: [{position: 30,type: #STANDARD, label: 'SapVersion' }]
+  @UI.selectionField: [{position: 30}]
+  @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 30 }]  
+  @EndUserText.label: 'SAP Version'
+  SapVersion;
+  @UI.lineItem: [{position: 40,type: #STANDARD, label: 'Author' }]
+  @UI.identification: [{position: 40,type: #STANDARD, label: 'Author' }]
+  @UI.selectionField: [{position: 40}]
+  @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 40 }]   
+  @EndUserText.label: 'Author'
+  Author;
+  @UI.hidden: true
+  LastChanged;
+  @UI.lineItem: [{position: 60,type: #STANDARD,label: 'ProjectName' }]
+  @UI.identification: [{position: 60,type: #STANDARD,label: 'ProjectName' }]
+  @UI.selectionField: [{position: 60}]
+  @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 10 }]  
+  @EndUserText.label: 'Project Name'
+  ProjectName;
+  @UI.hidden: true
+  CreatedBy;
+  @UI.hidden: true
+  CreatedAt;
+  @UI.hidden: true
+  LocalLastChangedBy;
+  @UI: { dataPoint:{ title: 'Last Action On', targetValueElement: 'LocalLastChangedAt' } }
+  LocalLastChangedAt;
+  @UI.hidden: true
+  LastChangedAt;
+  @UI.hidden: true
+  Archived;
+  @UI: { fieldGroup:     [ { position: 50, qualifier: 'Upload' , label: 'Attachment'} ]}
+  @UI: { identification: [ { position: 30 , label: 'File' } ] }
+  Attachment;
+  @UI.hidden: true
+  MimeType;
+  @UI.hidden: true
+  Filename;
+  @UI.hidden: true
+  AlreadyImported;
+
+
+}

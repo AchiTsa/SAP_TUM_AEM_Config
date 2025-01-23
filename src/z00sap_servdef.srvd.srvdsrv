@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition'
+define service Z00SAP_ServDef {
+  expose Z00SAP_ProjectOverview_C;
+  expose Z00SAP_Projectdetails_C;
+  expose Z00SAP_Projectdetails_C_Less;
+  expose Z00SAP_PROJECTS_C;
+  expose Z00SAP_COL_NAMES_C;
+}

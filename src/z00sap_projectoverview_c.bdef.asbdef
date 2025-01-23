@@ -1,0 +1,19 @@
+projection implementation in class zbp_00sap_projectoverview_c unique;
+//strict(2);
+use draft;
+define behavior for Z00SAP_ProjectOverview_C
+{
+  use create;
+  use update;
+  //use delete;
+  use action duplicateProject;
+  use action deleteProject;
+  use action exportExcelData;
+  use action checkHierarchies;
+  use action Prepare;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+
+}

@@ -1,0 +1,95 @@
+managed implementation in class zbp_00sap_projectdetails_i unique;
+strict ( 2 );
+//with draft;
+
+define behavior for Z00SAP_ProjectDetails_I alias prodet //alias <alias_name>
+lock master
+persistent table z00SAP_tbb
+
+
+
+etag master LocalLastChangedAt
+//lock master total etag LastChangedAt
+authorization master ( global, instance )
+//etag master <field_name>
+{
+  create;
+  update;
+  delete;
+  action add_line parameter Z00SAP_ADD_LINE_PARAMS result [1] $self;
+
+  mapping for z00sap_projects
+  {
+    Author = author;
+    Projectid = projectid;
+    Version = version;
+    ProjectName = projectname;
+    SapVersion = sapversion;
+    LastChanged = lastchanged;
+    CreatedBy = createdby;
+    CreatedAt = createdat;
+    LocalLastChangedBy = locallastchangedby;
+    LocalLastChangedAt = locallastchangedat;
+    LastChangedAt = lastchangedat;
+  }
+
+  mapping for z00sap_tl
+  {
+    Tierid = tierid;
+    TierLevel = tierlevel;
+    TL_Projectid = projectid;
+    TL_Version = version;
+  }
+
+  mapping for z00sap_es
+  {
+    ES_Id = es_id;
+    ES_Tierid = tierid;
+    StyleName = stylename;
+  }
+
+  mapping for z00sap_et
+  {
+    ET_Id = et_id;
+    ET_ES_Id = es_id;
+    TaskName = taskname;
+    Url = url;
+    Name = name;
+  }
+
+  mapping for z00sap_tbb
+  {
+    tbbid = tbb_id;
+    tbbetid = et_id;
+    tbbname = tbb_name;
+  }
+
+
+
+
+//  mapping for z00sap_col_vals
+//  {
+//    colvalid = val_id;
+//    colvalscolumnkey = column_key;
+//    value = value;
+//    issap = is_sap;
+//    iseditable = is_editable;
+//    colvalstbbid = tbb_id;
+//  }
+//
+//  mapping for z00sap_columns
+//  {
+//    columnkey = column_key;
+//    colcolumn = columns;
+//    columndesc = column_description;
+//    columndtype = data_type;
+//    columnwidth = col_width;
+//    columnorder = col_order;
+//    colcreatedby = created_by;
+//    colcreatedat = created_at;
+//    collocallastchangedby = local_last_changed_by;
+//    collocallastchangedat = local_last_changed_at;
+//    collastchangedat = last_changed_at;
+//  }
+}
+//Start

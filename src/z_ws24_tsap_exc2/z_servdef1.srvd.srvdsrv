@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition'
+define service Z_ServDef1 {
+  expose zc_ses_parent;
+  expose zc_ses_excel;
+}

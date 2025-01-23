@@ -1,0 +1,53 @@
+managed implementation in class zbp_00sap_projectoverview_i unique;
+//strict ( 2 );
+with draft;
+define behavior for Z00SAP_ProjectOverview_I alias ProjOverFile //alias <alias_name>
+persistent table z00sap_projects
+draft table z00sap_proj_d
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+
+authorization master ( global)
+//etag master <field_name>
+{
+  field ( readonly, numbering : managed ) Projectid;
+  field ( readonly ) LocalLastChangedAt, LastChangedAt;
+
+  create;
+  update;
+  delete;
+  action deleteProject;
+  action duplicateProject;
+  action ( features : instance ) uploadExcelData  result [1] $self;
+  action  exportExcelData;
+  action checkHierarchies;
+
+  determination fields on modify { field Filename ; }
+//  determination createUrls on modify { create; update;}
+  determination createUrls on save {create; update;  }
+
+
+
+  mapping for z00sap_projects
+  {
+    Author = author;
+    Projectid = projectid;
+    Version = version;
+    ProjectName = projectname;
+    SapVersion = sapversion;
+    LastChanged = lastchanged;
+    CreatedBy = createdby;
+    CreatedAt = createdat;
+    LocalLastChangedBy = locallastchangedby;
+    LocalLastChangedAt = locallastchangedat;
+    LastChangedAt = lastchangedat;
+    Archived = archived;
+    Filename = filename;
+    Attachment = attachment;
+    MimeType = mimetype;
+    AlreadyImported = alreadyimported;
+  }
+
+   validation excelVal on save {  field Filename; create; update;}
+
+}
