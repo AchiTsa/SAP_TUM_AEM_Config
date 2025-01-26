@@ -4,12 +4,21 @@
  headerInfo: {
   title: {
     type: #STANDARD,
-    value: 'Projectid'
+    value: 'ProjectName'
   },
   typeName: 'Project Overview',
  typeNamePlural: 'Project Overviews'
  }
 }
+
+//@UI.presentationVariant: [{
+//     groupBy: [ 'ProjectName' ],
+//
+////     visualizations: [{ type: #AS_LINEITEM }] //,
+//
+//     requestAtLeast: [ 'ProjectName' ]
+//
+//     }]
 
 annotate entity Z00SAP_ProjectOverview_C with
 {
@@ -34,7 +43,7 @@ annotate entity Z00SAP_ProjectOverview_C with
        dataPoint:        { title: 'Project ID', targetValueElement: 'Projectid' } 
        }
 
-  @UI.lineItem: [{position: 10,type: #STANDARD,label: 'Project ID' },
+  @UI.lineItem: [//{position: 10,type: #STANDARD,label: 'Project ID' },
       {type:#FOR_ACTION, label: 'Duplicate Projects', dataAction: 'duplicateProject', invocationGrouping: #ISOLATED},
       {type:#FOR_ACTION, label: 'Synchronize Attachment', dataAction: 'exportExcelData', invocationGrouping: #ISOLATED},
 //      {type:#FOR_ACTION, label: 'Import Project', dataAction: 'importExcelProject'},
@@ -43,8 +52,9 @@ annotate entity Z00SAP_ProjectOverview_C with
   //  @UI.identification: [{position: 10,type: #STANDARD,label: 'Projectid' }]
   @UI.selectionField: [{position: 10}]
   //  @UI.fieldGroup: [{qualifier: 'Fieldgroup:HeaderItems', position: 50, label: 'Projectid'        }]
+  @UI.hidden: true
   Projectid;
-  @UI: { lineItem:       [ { position: 10, importance: #HIGH , label: 'Version'}  ] ,
+  @UI: { lineItem:       [ { position: 10,type: #STANDARD, importance: #HIGH , label: 'Version'}  ] ,
        identification: [ { position: 10 , label: 'Version' } ]
        }
   @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 20 }]  
@@ -69,6 +79,7 @@ annotate entity Z00SAP_ProjectOverview_C with
   @UI.selectionField: [{position: 60}]
   @UI.fieldGroup: [{ qualifier: 'ProjectData', position: 10 }]  
   @EndUserText.label: 'Project Name'
+  
   ProjectName;
   @UI.hidden: true
   CreatedBy;

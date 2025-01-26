@@ -25,11 +25,13 @@ define root view entity Z00SAP_Projectdetails_C_Less
               position: 10
               }
               ]
-      @UI.lineItem: [{position: 1, type: #STANDARD, label: 'Project ID' },
+      @UI.lineItem: [
+      //{position: 1, type: #STANDARD, label: 'Project ID' },
       {type:#FOR_ACTION, label: 'Add line', dataAction: 'add_line', invocationGrouping: #ISOLATED}]
-      @UI.identification: [{position: 1, type: #STANDARD, label: 'Project ID' }]
-      @UI.selectionField: [{position: 1}]
-      @UI.fieldGroup: [{qualifier: 'Fieldgroup:HeaderItems', position: 1, label: 'Project ID' }]
+//      @UI.identification: [{position: 1, type: #STANDARD, label: 'Project ID' }]
+//      @UI.selectionField: [{position: 1}]
+//      @UI.fieldGroup: [{qualifier: 'Fieldgroup:HeaderItems', position: 1, label: 'Project ID' }]
+  @UI.hidden: true
   key Projectid,
 
       @UI.hidden: true

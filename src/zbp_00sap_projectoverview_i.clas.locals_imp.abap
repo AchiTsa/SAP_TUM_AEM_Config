@@ -47,6 +47,8 @@ CLASS lhc_Z00SAP_ProjectOverview_I DEFINITION INHERITING FROM cl_abap_behavior_h
       IMPORTING REQUEST requested_authorizations FOR ProjOverFile RESULT result.
     METHODS createUrls FOR DETERMINE ON SAVE
       IMPORTING keys FOR ProjOverFile~createUrls.
+    METHODS validateProjectNameFilled FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ProjOverFile~validateProjectNameFilled.
 *    METHODS createUrls FOR DETERMINE ON MODIFY
 *      IMPORTING keys FOR ProjOverFile~createUrls.
     METHODS is_update_allowed
@@ -699,8 +701,8 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
           CORRESPONDING #( keys )
           RESULT DATA(lt_inv).
 
-      IF lt_inv[ 1 ]-filename eq ls_excel_data_pr-filename.
-        exit.
+      IF lt_inv[ 1 ]-filename EQ ls_excel_data_pr-filename.
+        EXIT.
       ENDIF.
 
 
@@ -715,7 +717,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 
 
 
-      IF ls_excel_data_pr is not Initial."sy-subrc = 0.
+      IF ls_excel_data_pr IS NOT INITIAL."sy-subrc = 0.
 
         lt_update = VALUE #(
                         (
@@ -1304,6 +1306,8 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
           one_error_et   TYPE error_pos,
           warning_line   LIKE LINE OF reported-projoverfile.
 
+    SORT lt_rows BY taskname.
+
     index = 1.
     LOOP AT lt_rows INTO DATA(ls_row).
       CALL FUNCTION 'CHECK_DOMAIN_VALUES'
@@ -1322,6 +1326,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
         warning_line = VALUE #( %msg = new_message( severity = if_abap_behv_message=>severity-warning v1 = ls_row-tbb_name   v2 = description id = 'Z00SAP_ERROR_MESSAGE' number = 004 ) ).
         APPEND warning_line TO reported-projoverfile.
       ENDIF.
+
 
 
       IF old_task_name NE ls_row-taskname.
@@ -1567,6 +1572,29 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
     col_field-ref_field = ref_field.
 
     APPEND col_field TO feldkatalog.
+  ENDMETHOD.
+
+  METHOD validateProjectNameFilled.
+    READ ENTITIES OF z00sap_projectoverview_i
+        IN LOCAL MODE
+        ENTITY ProjOverFile
+        ALL FIELDS WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_read_results)
+        FAILED DATA(lt_failed).
+
+    LOOP AT lt_read_results ASSIGNING FIELD-SYMBOL(<ls_result>).
+      IF <ls_result>-ProjectName IS INITIAL.
+        APPEND VALUE #( %is_draft = <ls_result>-%is_draft
+                        Projectid = <ls_result>-Projectid
+                        Version = <ls_result>-Version
+                      ) TO failed-projoverfile.
+        APPEND VALUE #(
+                        %is_draft = <ls_result>-%is_draft
+                        Projectid = <ls_result>-Projectid
+                        Version = <ls_result>-Version
+                        %msg = new_message( severity = if_abap_behv_message=>severity-error v1 = 'No Project Name specified!' id = 'Z00SAP_ERROR_MESSAGE' number = 006 ) ) TO  reported-projoverfile.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.

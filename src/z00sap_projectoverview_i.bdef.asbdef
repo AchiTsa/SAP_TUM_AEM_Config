@@ -11,7 +11,11 @@ authorization master ( global)
 //etag master <field_name>
 {
   field ( readonly, numbering : managed ) Projectid;
+  field ( mandatory ) ProjectName;
   field ( readonly ) LocalLastChangedAt, LastChangedAt;
+
+  //validate that ProjectName is given
+  validation validateProjectNameFilled on save { field ProjectName; create;  update;}
 
   create;
   update;

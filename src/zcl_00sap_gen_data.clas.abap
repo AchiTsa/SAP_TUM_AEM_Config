@@ -161,12 +161,26 @@ CLASS zcl_00sap_gen_data IMPLEMENTATION.
 *    INSERT z00sap_col_vals FROM TABLE lt_col_vals.
 *    INSERT z00sap_struct   FROM TABLE lt_struct.
 
-  DATA: lv_project_name TYPE String.
-  lv_project_name = 'project'.
+*  DATA: lv_project_name TYPE String.
+*  lv_project_name = 'project'.
+*
+*  UPDATE z00sap_proj_d
+*  SET projectname = @lv_project_name
+*  WHERE version LIKE 'achi'.
 
-  UPDATE z00sap_proj_d
-  SET projectname = @lv_project_name
-  WHERE version LIKE 'achi'.
+*    DELETE FROM z00sap_projects.
+*    DELETE FROM z00sap_tl.
+*    DELETE FROM z00sap_es.
+*    DELETE FROM z00sap_et.
+*    DELETE FROM z00sap_tbb.
+*    DELETE FROM z00sap_proj_d.
+
+**********************************************************************
+* execute this line when logging throws exception
+*    Delete From DBTABLOG where TABNAME = 'Z00SAP_PROJECTS'.
+**********************************************************************
+
+
 
 
   ENDMETHOD.
