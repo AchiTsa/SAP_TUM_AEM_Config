@@ -49,8 +49,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I DEFINITION INHERITING FROM cl_abap_behavior_h
       IMPORTING keys FOR ProjOverFile~createUrls.
     METHODS validateProjectNameFilled FOR VALIDATE ON SAVE
       IMPORTING keys FOR ProjOverFile~validateProjectNameFilled.
-*    METHODS createUrls FOR DETERMINE ON MODIFY
-*      IMPORTING keys FOR ProjOverFile~createUrls.
     METHODS is_update_allowed
       RETURNING VALUE(update_allowed) TYPE abap_bool.
     METHODS is_create_allowed
@@ -357,7 +355,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 
 
 
-*    INSERT z00sap_projects FROM lt_inv[ 1 ].
 
 ** Get attachment value from the instance
     DATA(lv_attachment) = lt_inv[ 1 ]-attachment.
@@ -452,23 +449,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
       ls_excel_data_pr-version = ls_excel_data_pr-version && '.' && ts.
 
       INSERT z00sap_projects FROM ls_excel_data_pr.
-      "overwrite uploaded filename and attachment with existing data
-*      UPDATE z00sap_projects FROM basis_project.
-*
-*      MODIFY ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*        ENTITY ProjOverFile
-*        UPDATE FROM VALUE #(  ( "for ls_inv in lt_inv
-*                            Projectid =  basis_project-projectid
-*                            Version = basis_project-version
-*                            Attachment = basis_project-attachment
-*                            Filename = basis_project-filename
-*                           )
-*                           ).
-*         READ ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*      ENTITY ProjOverFile
-*      ALL FIELDS WITH
-*      CORRESPONDING #( keys )
-*      RESULT DATA(cache).
+
     ELSE.
       ls_excel_data_pr-Projectid = prid.
       ls_excel_data_pr-Version = prve.
@@ -477,7 +458,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 
 
 
-
+" take care that the tl es and tbb are always set
     DELETE lt_rows INDEX 1.
     LOOP AT lt_rows INTO DATA(ls_rows).
 
@@ -567,103 +548,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 
     ENDLOOP.
 
-
-*
-*** Prepare the datatypes to store the data from internal table lt_excel_data to child entity through EML
-*    DATA lt_att_create TYPE TABLE FOR CREATE zi_ses_parent\_ses_excel.
-*
-*    lt_att_create = VALUE #( (  %cid_ref  = keys[ 1 ]-%cid_ref
-*                                %is_draft = keys[ 1 ]-%is_draft
-*                                end_user  = keys[ 1 ]-end_user
-*                                %target   = VALUE #( FOR ls_data IN lt_excel_data ( %cid       = |{ ls_data-ebeln }{ ls_data-ebelp }|
-*                                                                                   %is_draft   = keys[ 1 ]-%is_draft
-*                                                                                   end_user    = sy-uname
-*                                                                                   entrysheet  = ls_data-entrysheet
-*                                                                                   ebeln       = ls_data-ebeln
-*                                                                                   ebelp       = ls_data-ebelp
-*                                                                                   ext_number  = ls_data-ext_number
-*                                                                                   begdate     = ls_data-begdate
-*                                                                                   enddate     = ls_data-enddate
-*                                                                                   quantity    = ls_data-quantity
-*                                                                                  " BASE_UOM    = ls_data-
-*                                                                                   fin_entry   = ls_data-fin_entry
-*                                                                                  %control = VALUE #( end_user    = if_abap_behv=>mk-on
-*                                                                                                      entrysheet  = if_abap_behv=>mk-on
-*                                                                                                      ebeln       = if_abap_behv=>mk-on
-*                                                                                                      ebelp       = if_abap_behv=>mk-on
-*                                                                                                      ext_number  = if_abap_behv=>mk-on
-*                                                                                                      begdate     = if_abap_behv=>mk-on
-*                                                                                                      enddate     = if_abap_behv=>mk-on
-*                                                                                                      quantity    = if_abap_behv=>mk-on
-*                                                                                                     " BASE_UOM    = ls_data-
-*                                                                                                      fin_entry   = if_abap_behv=>mk-on  ) ) ) ) ).
-*    READ ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY file
-*    BY \_ses_excel
-*    ALL FIELDS WITH
-*    CORRESPONDING #( keys )
-*    RESULT DATA(lt_excel).
-*
-*** Delete already existing entries from child entity
-*    MODIFY ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY exceldata
-*    DELETE FROM VALUE #( FOR ls_excel IN lt_excel (  %is_draft = ls_excel-%is_draft
-*                                                     %key      = ls_excel-%key ) )
-*    MAPPED DATA(lt_mapped_delete)
-*    REPORTED DATA(lt_reported_delete)
-*    FAILED DATA(lt_failed_delete).
-*
-*** Create the records from the new attached CSV file
-*    MODIFY ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY file
-*    CREATE BY \_ses_excel
-*    AUTO FILL CID
-*    WITH lt_att_create.
-*
-*
-*    APPEND VALUE #( %tky = lt_inv[ 1 ]-%tky ) TO mapped-file.
-*    APPEND VALUE #( %tky = lt_inv[ 1 ]-%tky
-*                    %msg = new_message_with_text( severity = if_abap_behv_message=>severity-success
-*                                                  text = 'Excel Data Uploaded' )
-*                   ) TO reported-file.
-*
-*    MODIFY ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY file
-*    UPDATE FROM VALUE #( ( %is_draft = keys[ 1 ]-%is_draft
-*                           end_user  = sy-uname
-*                           status     =  'P'
-*                          " %data     = VALUE #( status = 'P' )
-*                           %control  = VALUE #( status = if_abap_behv=>mk-on ) ) )
-*    MAPPED DATA(lt_mapped_update)
-*    REPORTED DATA(lt_reported_update)
-*    FAILED DATA(lt_failed_update).
-*
-*    READ ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY file
-*    ALL FIELDS WITH CORRESPONDING #( keys )
-*    RESULT DATA(lt_file_status).
-*
-*    MODIFY ENTITIES OF zi_ses_parent IN LOCAL MODE
-*    ENTITY file
-*    UPDATE FROM VALUE #( FOR ls_file_status IN lt_file_status ( %is_draft = ls_file_status-%is_draft
-*                                                                %tky      = ls_file_status-%tky
-*                                                                %data     = VALUE #( status = 'C'  )
-*                                                                %control  = VALUE #( status = if_abap_behv=>mk-on )
-*                                                     ) ).
-*
-*    READ ENTITIES OF zi_ses_parent IN LOCAL MODE
-*       ENTITY file
-*       ALL FIELDS WITH
-*       CORRESPONDING #( keys )
-*       RESULT DATA(lt_file).
-*
-*
-*
-*    result = VALUE #( FOR ls_file IN lt_file ( %tky   = ls_file-%tky
-*
-*                                               %param = ls_file ) ).
-
-
   ENDMETHOD.
 
 
@@ -671,27 +555,15 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 
   METHOD fields.
 
-*    READ ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*       ENTITY ProjOverFile
-*       ALL FIELDS WITH
-*       CORRESPONDING #( keys )
-*       RESULT DATA(lt_file).
-*
-*    MODIFY ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*    ENTITY ProjOverFile
-*    UPDATE FROM VALUE #( FOR key IN keys (
-*                                           AlreadyImported = abap_true " Accepted
-*                                              %control-AlreadyImported = if_abap_behv=>mk-on ) ).
-
     DATA: ls_excel_data_pr TYPE z00sap_projects,
           lt_update        TYPE TABLE FOR UPDATE z00sap_projectoverview_i.
 
 
-
+" otherwise called two times
     IF keys[ 1 ]-%is_draft = '00'.
       DATA(prid) = keys[ 1 ]-Projectid.
       DATA(prve) = keys[ 1 ]-Version.
-
+" take care that old filename is not overwritten in storage
       SELECT SINGLE * FROM z00sap_projects INTO  @ls_excel_data_pr
       WHERE projectid = @prid AND version = @prve.
 
@@ -711,12 +583,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
       EXECUTE uploadexceldata
       FROM CORRESPONDING #( keys ).
 
-
-
-
-
-
-
       IF ls_excel_data_pr IS NOT INITIAL."sy-subrc = 0.
 
         lt_update = VALUE #(
@@ -730,17 +596,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
                         )
                         ).
 
-
-
-*        MODIFY ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*          ENTITY ProjOverFile
-*          UPDATE FROM VALUE #( for key in keys (
-*                              "Projectid =  ls_inv-projectid
-*                              "Version = ls_inv-version
-*                              Attachment = ls_excel_data_pr-attachment
-*                              Filename = ls_excel_data_pr-filename
-*                             )
-*                             ).
 
         MODIFY ENTITIES OF z00sap_projectoverview_i
         ENTITY ProjOverFile
@@ -812,7 +667,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
              tt_row TYPE STANDARD TABLE OF ty_excel.
 
       DATA lt_rows TYPE tt_row.
-*        CLEAR: lt_rows[].
 
       DATA(lo_xlsx) = xco_cp_xlsx=>document->for_file_content( iv_file_content = lv_attachment )->read_access( ).
       DATA(lo_worksheet) = lo_xlsx->get_workbook( )->worksheet->at_position( 1 ).
@@ -936,6 +790,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
           it_fieldcat  TYPE lvc_t_fcat,
           col_field    LIKE LINE OF it_fieldcat.
 
+" checking with an outsourced method to not have duplicate code
     lhc_Z00SAP_ProjectOverview_I=>insert_col(  EXPORTING
                                                coltext = 'Three-Tier Architecture'
                                                col_pos = 1
@@ -1141,7 +996,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 *
 *    APPEND col_field TO it_fieldcat.
 
-
+" creates the bytestring
 
     TRY.
         edx_util=>create_xls_from_itab(
@@ -1155,28 +1010,21 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
         ).
       CATCH cx_edx_send_fault.
     ENDTRY.
-*    CALL FUNCTION 'SCMS_XSTRING_TO_BINARY'
-*      EXPORTING
-*        buffer        = lv_xstring
-**       APPEND_TO_TABLE       = ' '
-*      IMPORTING
-*        output_length = lv_binlength
-*      TABLES
-*        binary_tab    = lt_xlstab.
-*
-*     if sy-subrc = 0.
-*     ENDIF.
+
 
 
     SELECT SINGLE * FROM z00sap_projects INTO @DATA(ls_pr) WHERE projectid = @prid AND version = @prve.
 
 
+" write bytestring to attachment for download
     ls_pr-attachment = lv_xstring.
 
     MODIFY z00sap_projects FROM ls_pr.
 
 
-
+**********************************************************************
+" actual method provided by sap, sadly not supported by our system
+**********************************************************************
 
 *    DATA(lo_document) = xco_cp_xlsx=>document->empty( )->write_access( ).
 *
@@ -1195,8 +1043,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
     warning_line = VALUE #( %msg = new_message( severity = if_abap_behv_message=>severity-success  id = 'Z00SAP_ERROR_MESSAGE' number = 005 ) ).
     APPEND warning_line TO reported-projoverfile.
 
-
-
   ENDMETHOD.
 
   METHOD validateHierarchy.
@@ -1211,7 +1057,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
           wa1          LIKE LINE OF sorted_lines,
           pos_res_line TYPE position_reason.
 
-    itab = lt_hierarchy. "Original darf nicht verändert werden
+    itab = lt_hierarchy. "Original is not allowed to be changed
 
     LOOP AT itab INTO wa WHERE value CA '/'. "contains any
       SPLIT wa AT '/' INTO TABLE help_itab.
@@ -1226,7 +1072,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
       APPEND sorted_line TO sorted_lines.
     ENDLOOP.
 
-    SORT sorted_lines BY group position.
+    SORT sorted_lines BY group position. "sorted is not grated
 
     DATA sorted_group_unique LIKE sorted_lines.
     sorted_group_unique = sorted_lines.
@@ -1247,13 +1093,13 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
       n = wa1-position.
       n = n + 1.
       SHIFT n LEFT DELETING LEADING '0'.
-      wa-value = wa1-group && n. "suchstring nachfolger
+      wa-value = wa1-group && n. "searchstring follower
 
       IF line_exists( itab[ value = wa-value ] ).
         CONTINUE.
       ENDIF.
 
-      " hier angekommen, wurde der Nachfolger nicht gefunden. Wenn es keinen mehr gibt, ok.
+      " here the follower was not found, if nothing left then ok
       READ TABLE sorted_lines INTO DATA(next) INDEX sy-tabix + 1.
       IF sy-subrc = 0 AND next-group = wa-value(1). "Anforderung fehlt!
         IF wa1-position EQ next-position.
@@ -1265,7 +1111,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
         ENDIF.
 
         APPEND pos_res_line TO error_tab.
-        "WRITE: / 'Anforderung fehlt', wa-value.
       ENDIF.
 
     ENDLOOP.
@@ -1274,7 +1119,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD checkHierarchies.
-
+"checks color and hierarchy
     CLEAR reported-projoverfile.
 
     READ ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
@@ -1503,26 +1348,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
   ENDMETHOD.
 
 
-*standardURL:http://localhost:8080/test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#aemmanagementproject1-display&/TaskDetails
-*standardURL/db97c5f0-56cb-1edf-b1db-be916cd1a68d/AchilleasCorrect_NewUUIDVersioning.20250112134830/Create%2520custom%2520UI
-*standardURL/db97c5f0-56cb-1edf-b1db-be916cd1a68d/AchilleasCorrect_NewUUIDVersioning.20250112134830/Adapt%2520standard%2520UI%253A%2520add%252Fhide%252Fcreate%252Fre-name%252Fre-arrange%2520field%252Flabel%252Fheadlines
-*standardURL/projectID/version/etname
-
-*http://localhost:8080/test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#aemmanagementproject1-display&/TaskDetails/DB97C5F056CB1EEFB49F92F0CB4A00B3/LinkTest/Adapt%20standard%20UI:%20add/hide/create/re-name/re-arrange%20field/label/headlines
-*http://localhost:8080/test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#aemmanagementproject1-display&/TaskDetails/db97c5f0-56cb-1eef-b49f-92f0cb4a00b3/LinkTest/Adapt%2520standard%2520UI%253A%2520add%252Fhide%252Fcreate%252Fre-name%252Fre-ar
-  "range%2520field%252Flabel%252Fheadlines  s
-
-
-*https://s40lp1.ucc.cit.tum.de:8100/sap/bc/ui5_ui5/sap/z_graphapp_00/index.html?sap-client=300#/TaskDetails/db97c5f056cb1edfb5b44a269545e4f3/TestOfUpload/db97c5f056cb1edfb5b44afeff5ca4f3
-*http://localhost:8080/test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#aemmanagementproject1-display&/TaskDetails/DB97C5F056CB1EEFB4A531F1BD346F18/linktest2/DB97C5F056CB1EEFB4A5326626FB2F1A
-*Must be
-*http://localhost:8081/test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#aemmanagementproject1-display&/TaskDetails/db97c5f056cb1eefb4a531f1bd346f18/linktest2/db97c5f056cb1eefb4a5326626fb2f1a
-
-
-
-
-
-
   METHOD createUrls.
 
     READ ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
@@ -1540,23 +1365,17 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
 **********************************************************************
     preURL = preURL && '/' && prid. "&& '/' && prve && '/'.
 
-*    SELECT * FROM z00sap_et INTO TABLE @DATA(it_et) WHERE projectid = @prid AND version = @prve.
 * Iterate over all versions of one project and regenerate links
     SELECT * FROM z00sap_et INTO TABLE @DATA(it_et) WHERE projectid = @prid.
 
     LOOP AT it_et INTO DATA(ls_et).
 * Always according version has to be taken of ls_et and not general
       ls_et-url = preurl && '/' && ls_et-version && '/' && ls_et-et_id.
-      "ls_et-url = preurl && ls_et-et_id.
       ls_et-name = 'Chart'.
 
       MODIFY z00sap_et FROM ls_et.
     ENDLOOP.
 
-*      MODIFY ENTITIES OF z00sap_projectoverview_i IN LOCAL MODE
-*      ENTITY ProjOverFile
-*      UPDATE
-*      FROM CORRESPONDING #( keys ).
 
   ENDMETHOD.
 
@@ -1575,6 +1394,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validateProjectNameFilled.
+  " check that project name is given because in overview its grouped by name
     READ ENTITIES OF z00sap_projectoverview_i
         IN LOCAL MODE
         ENTITY ProjOverFile

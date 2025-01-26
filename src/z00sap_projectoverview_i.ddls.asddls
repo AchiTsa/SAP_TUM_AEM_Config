@@ -5,8 +5,7 @@ define root view entity Z00SAP_ProjectOverview_I
   as select from z00sap_projects as pro
   association [0..*] to Z00SAP_ProjectDetails_I as tbbview on  pro.projectid = tbbview.Projectid
                                                            and pro.version   = tbbview.Version
-  //Question
-  //A entry in projectoverview table is one version of Project or a general project?
+
   
 {
   key projectid          as Projectid,

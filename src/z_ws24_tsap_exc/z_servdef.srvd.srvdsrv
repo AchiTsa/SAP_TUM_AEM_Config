@@ -1,4 +1,0 @@
-@EndUserText.label: 'Service Definition'
-define service Z_ServDef {
-  expose ZC_INVOICE_TABLE;
-}

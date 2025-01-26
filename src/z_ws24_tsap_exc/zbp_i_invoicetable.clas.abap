@@ -1,5 +1,0 @@
-CLASS zbp_i_invoicetable DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_invoicetable.
-ENDCLASS.
-
-CLASS zbp_i_invoicetable IMPLEMENTATION.
-ENDCLASS.
