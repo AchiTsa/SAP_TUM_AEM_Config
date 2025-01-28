@@ -59,9 +59,20 @@ authorization master ( global, instance )
 
   mapping for z00sap_tbb
   {
+
     tbbid = tbb_id;
     tbbetid = et_id;
     tbbname = tbb_name;
+//    new
+    Core_Extension_Domain = coreextensiondomain;
+    Projectid = projectid;
+    Version = version;
+    Extension_Domain = extensiondomain;
+    Color = color;
+    Reasoning = reasoning;
+    Hierachy = hierarchy;
+    Link = link;
+
   }
 
 

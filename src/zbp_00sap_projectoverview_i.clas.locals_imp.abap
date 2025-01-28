@@ -1058,7 +1058,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
           pos_res_line TYPE position_reason.
 
     itab = lt_hierarchy. "Original is not allowed to be changed
-
+    "split a1/b1 format
     LOOP AT itab INTO wa WHERE value CA '/'. "contains any
       SPLIT wa AT '/' INTO TABLE help_itab.
       DELETE TABLE itab FROM wa.
@@ -1078,7 +1078,7 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
     sorted_group_unique = sorted_lines.
 
     DELETE ADJACENT DUPLICATES FROM sorted_group_unique COMPARING group.
-
+    " check that first values are there
     LOOP AT sorted_group_unique INTO wa1.
       IF line_exists( sorted_lines[ group = wa1-group position = 1 ] ).
         CONTINUE.
@@ -1090,6 +1090,19 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
     ENDLOOP.
 
     LOOP AT sorted_lines INTO wa1.
+
+      Data(index) = sy-tabix + 1.
+
+      READ TABLE sorted_lines INTO DATA(cache) INDEX index.
+
+      "check before if there is a dublicate
+      if Sy-subrc = 0 and cache-group = wa1-group and cache-position = wa1-position.
+        pos_res_line-description = 'Dublicate: ' && wa1-group && wa1-position.
+        pos_res_line-value = wa1-group && wa1-position.
+        APPEND pos_res_line TO error_tab.
+        CONTINUE.
+      ENDIF.
+
       n = wa1-position.
       n = n + 1.
       SHIFT n LEFT DELETING LEADING '0'.
@@ -1099,8 +1112,11 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
+
+
       " here the follower was not found, if nothing left then ok
-      READ TABLE sorted_lines INTO DATA(next) INDEX sy-tabix + 1.
+      READ TABLE sorted_lines INTO DATA(next) INDEX index.
+      "check if possible follower to determine dublicate or missing follower
       IF sy-subrc = 0 AND next-group = wa-value(1). "Anforderung fehlt!
         IF wa1-position EQ next-position.
           pos_res_line-description = 'Dublicate: ' && wa1-group && wa1-position.
