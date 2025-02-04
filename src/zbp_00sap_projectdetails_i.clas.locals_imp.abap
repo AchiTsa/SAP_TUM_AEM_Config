@@ -263,16 +263,12 @@ CLASS lhc_Z00SAP_ProjectDetails_I IMPLEMENTATION.
 
   METHOD get_global_authorizations.
 
-
-
     IF requested_authorizations-%update = if_abap_behv=>mk-on.
     " Check create authorization
-
     IF is_update_allowed( ) = abap_true.
       result-%update = if_abap_behv=>auth-allowed.
     ELSE.
       result-%update = if_abap_behv=>auth-unauthorized.
-
     ENDIF.
     ENDIF.
 
@@ -301,36 +297,30 @@ CLASS lhc_Z00SAP_ProjectDetails_I IMPLEMENTATION.
       result-%action-add_line = if_abap_behv=>auth-unauthorized.
     ENDIF.
     ENDIF.
-
-
   ENDMETHOD.
 
   METHOD is_update_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     update_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     update_allowed = abap_true.
   ENDMETHOD.
 
   METHOD is_create_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '01'.
     create_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     create_allowed = abap_true.
   ENDMETHOD.
 
   METHOD is_delete_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '06'.
     delete_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     delete_allowed = abap_true.
   ENDMETHOD.
 
   METHOD is_addline_allowed.
    AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     addline_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     addline_allowed = abap_true.
   ENDMETHOD.
 
 ENDCLASS.

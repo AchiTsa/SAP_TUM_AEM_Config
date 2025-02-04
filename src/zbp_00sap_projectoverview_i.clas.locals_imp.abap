@@ -1242,15 +1242,6 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
-
-*    IF requested_authorizations-%action-prepare = if_abap_behv=>mk-on.
-*      IF is_update_allowed( ) = abap_true.
-*        result-%action-Prepare = if_abap_behv=>auth-allowed.
-*      ELSE.
-*        result-%action-Prepare = if_abap_behv=>auth-allowed.
-*      ENDIF.
-*    ENDIF.
-
     " Check if DELETE operation is requested
     IF requested_authorizations-%delete = if_abap_behv=>mk-on.
       IF is_delete_allowed( ) = abap_true.
@@ -1310,57 +1301,48 @@ CLASS lhc_Z00SAP_ProjectOverview_I IMPLEMENTATION.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
      ID 'ACTVT' FIELD '01'.
     create_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     create_allowed = abap_true.
   ENDMETHOD.
 
   METHOD is_update_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     update_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*    update_allowed = abap_true.
   ENDMETHOD.
 
   METHOD is_delete_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
        ID 'ACTVT' FIELD '06'.
     delete_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*    delete_allowed = abap_false.
-
   ENDMETHOD.
 
   METHOD is_deleteproject_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '06'.
     deleteproject_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*      deleteproject_allowed = abap_false.
   ENDMETHOD.
 
   METHOD is_duplicateProject_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     duplicateproject_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     DUPLICATEPROJECT_ALLOWED = abap_true.
   ENDMETHOD.
 
   METHOD is_uploadExcelData_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     uploadexceldata_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     UPLOADEXCELDATA_ALLOWED = abap_true.
   ENDMETHOD.
 
   METHOD is_exportExcelData_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     exportexceldata_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     EXPORTEXCELDATA_ALLOWED = abap_true.
   ENDMETHOD.
 
   METHOD is_checkHierarchies_allowed.
     AUTHORITY-CHECK OBJECT 'Z_A_24'
     ID 'ACTVT' FIELD '02'.
     checkhierarchies_allowed = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
-*     CHECKHIERARCHIES_ALLOWED = abap_true.
   ENDMETHOD.
 
 

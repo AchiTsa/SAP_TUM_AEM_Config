@@ -7,7 +7,10 @@
 
 
 
-define  root view entity  Z00SAP_Projects_I
+define  root view 
+entity 
+
+ Z00SAP_Projects_I
   as select from z00sap_projects as pro
   
   composition [0..*] of Z00SAP_TL_I as tl
