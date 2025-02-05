@@ -1,7 +1,7 @@
 # SAP_TUM_AEM_Config
 
 ## Documentation
-A pdf was generated that documents everything about the project.
+A pdf was generated that describes everything about the project [Documentation](Project_Documentation_Group_SAP.pdf).
 
 ## Frontend code
 Frontend code can be downloaded from following repository: https://github.com/cody3807/sap_graph_chart
